@@ -1,5 +1,0 @@
-const useReactMultiCheckbox = () => {
-  /**/
-};
-
-export { useReactMultiCheckbox };

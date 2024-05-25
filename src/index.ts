@@ -1,1 +1,1 @@
-export { useReactMultiCheckbox } from './react-multi-checkbox';
+export { useMultiCheckbox } from './useMultiCheckbox';
