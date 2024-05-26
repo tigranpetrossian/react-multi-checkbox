@@ -5,13 +5,13 @@ type BaseItem = {
   id: string;
 };
 
-type Options<TItem> = {
-  items: TItem[];
-};
-
 type CheckboxProps = {
   checked: boolean;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
+};
+
+type UseMultiCheckboxOptions<TItem> = {
+  items: TItem[];
 };
 
 type UseMultiCheckboxResult = {
@@ -22,7 +22,7 @@ type UseMultiCheckboxResult = {
   getCheckboxProps: (id: string) => CheckboxProps;
 };
 
-function useMultiCheckbox<TItem extends BaseItem>(options: Options<TItem>): UseMultiCheckboxResult {
+function useMultiCheckbox<TItem extends BaseItem>(options: UseMultiCheckboxOptions<TItem>): UseMultiCheckboxResult {
   const { items } = options;
   const [checkedItems, setCheckedItems] = useState<string[]>([]);
   const [lastTouched, setLastTouched] = useState<string | null>(null);
@@ -93,4 +93,5 @@ function getSelectionRange<TItem extends BaseItem>(items: TItem[], current: stri
   return items.slice(start, end + 1).map((item) => item.id);
 }
 
+export type { UseMultiCheckboxOptions, UseMultiCheckboxResult };
 export { useMultiCheckbox };
