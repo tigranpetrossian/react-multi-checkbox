@@ -36,7 +36,7 @@ export default defineConfig((env) => {
     },
     test: {
       environment: 'happy-dom',
-      setupFiles: './vitest/setup.js',
+      setupFiles: './test/setup.ts',
     },
   };
 });
