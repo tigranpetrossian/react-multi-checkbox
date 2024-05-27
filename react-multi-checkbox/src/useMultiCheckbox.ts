@@ -55,12 +55,6 @@ function useMultiCheckbox<TItem extends BaseItem>(options: UseMultiCheckboxOptio
       } else {
         handleSingleCheckboxChange(id, event.target.checked);
       }
-
-      if (event.target.checked) {
-        setCheckedItems((prev) => [...prev, id]);
-      } else {
-        setCheckedItems((prev) => prev.filter((checkedId) => checkedId !== id));
-      }
     },
     [items, shiftKey, lastTouched]
   );
