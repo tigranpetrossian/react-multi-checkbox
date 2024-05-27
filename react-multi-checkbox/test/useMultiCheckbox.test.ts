@@ -1,9 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import '@testing-library/jest-dom/vitest';
-import { renderHook, RenderHookResult } from '@testing-library/react';
+import type { RenderHookResult } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
-import { useMultiCheckbox } from '../src';
-import { UseMultiCheckboxOptions, UseMultiCheckboxResult } from '../src/useMultiCheckbox';
+import { useMultiCheckbox } from 'react-multi-checkbox';
+import type { UseMultiCheckboxOptions, UseMultiCheckboxResult } from 'react-multi-checkbox';
 
 type Item = { id: string; name: string };
 

@@ -12,10 +12,5 @@
     "pretty": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "baseUrl": ".",
-    "paths": {
-      "*": ["src/*"]
-    }
   },
-  "include": ["demo", "src"],
 }
