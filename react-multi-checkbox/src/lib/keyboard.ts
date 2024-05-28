@@ -1,4 +1,6 @@
+import type React from 'react';
 import { useEffect, useState } from 'react';
+import { isMac } from 'lib/platform';
 
 export function useShiftKey() {
   const [shiftKey, setShiftKey] = useState(false);
@@ -17,4 +19,8 @@ export function useShiftKey() {
   }, []);
 
   return shiftKey;
+}
+
+export function primaryModifierPressed(event: KeyboardEvent | React.KeyboardEvent) {
+  return isMac() ? event.metaKey : event.ctrlKey;
 }
