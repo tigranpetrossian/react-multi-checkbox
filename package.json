@@ -6,7 +6,7 @@
     "dev": "pnpm --filter react-multi-checkbox dev",
     "build": "pnpm --filter react-multi-checkbox build",
     "lint": "eslint \"**/{src,test}/**/*.{ts,tsx}\" --ext ts,tsx --fix --max-warnings 0",
-    "test": "vitest",
+    "test": "pnpm --filter react-multi-checkbox test",
     "prepare": "husky"
   },
   "devDependencies": {
@@ -35,7 +35,7 @@
     "vite": "^5.2.7",
     "vite-plugin-dts": "^3.9.0",
     "vite-tsconfig-paths": "^4.3.2",
-    "vitest": "^1.4.0"
+    "vitest": "^1.5.0"
   },
   "lint-staged": {
     "**/{src,test}/**/*.{ts,tsx}": [
