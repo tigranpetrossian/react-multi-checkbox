@@ -1,6 +1,7 @@
 import type React from 'react';
-import { useCallback, useEffect, useState } from 'react';
-import { primaryModifierPressed, useShiftKey } from 'lib/keyboard';
+import { useCallback, useState } from 'react';
+import { useShiftKey } from 'lib/keyboard';
+import { useKeyboardShortcuts } from 'useKeyboardShortcuts';
 
 type BaseItem = {
   id: string;
@@ -75,7 +76,20 @@ function useMultiCheckbox<TItem extends BaseItem>(options: UseMultiCheckboxOptio
     onChange: createChangeHandler(id),
   });
 
-  useKeyboard(keyboardTarget, checkAll, clear, checkedItems);
+  useKeyboardShortcuts({
+    shortcuts: [
+      {
+        key: 'a',
+        handler: checkAll,
+        modifiers: { cmdOrCtrlKey: true },
+      },
+      {
+        key: 'Escape',
+        handler: clear,
+      },
+    ],
+    target: keyboardTarget,
+  });
 
   return {
     allChecked,
@@ -86,60 +100,11 @@ function useMultiCheckbox<TItem extends BaseItem>(options: UseMultiCheckboxOptio
   };
 }
 
-function getKeyboardTargetElement(target: UseMultiCheckboxOptions['keyboardTarget']): Element | Window | null {
-  if (target === undefined) {
-    return window;
-  }
-
-  if (target === null || target instanceof HTMLElement) {
-    return target;
-  }
-
-  if (typeof target === 'string') {
-    return document.querySelector(target);
-  }
-
-  return target.current;
-}
-
 function getSelectionRange<TItem extends BaseItem>(items: TItem[], current: string, lastTouched: string): string[] {
   const currentIndex = items.findIndex((item) => item.id === current);
   const lastIndex = items.findIndex((item) => item.id === lastTouched);
   const [start, end] = [currentIndex, lastIndex].sort((a, b) => a - b);
   return items.slice(start, end + 1).map((item) => item.id);
-}
-
-function useKeyboard(
-  target: UseMultiCheckboxOptions['keyboardTarget'],
-  checkAll: () => void,
-  clear: () => void,
-  checkedItems: string[]
-) {
-  useEffect(() => {
-    const targetElement = getKeyboardTargetElement(target);
-
-    if (!targetElement) {
-      return;
-    }
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'a' && primaryModifierPressed(event)) {
-        event.preventDefault();
-        checkAll();
-      }
-
-      if (event.key === 'Escape' && checkedItems.length > 0) {
-        event.preventDefault();
-        clear();
-      }
-    };
-
-    // Union target incorrectly lands on a wrong overload for `addEventListener`, causing errors.
-    (targetElement as HTMLElement).addEventListener('keydown', handleKeyDown);
-    return () => {
-      (targetElement as HTMLElement).removeEventListener('keydown', handleKeyDown);
-    };
-  }, [checkedItems, target, checkAll, clear]);
 }
 
 export type { UseMultiCheckboxOptions, UseMultiCheckboxResult };
