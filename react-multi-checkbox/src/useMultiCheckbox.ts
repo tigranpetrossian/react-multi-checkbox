@@ -18,6 +18,7 @@ type UseMultiCheckboxOptions<TItem extends BaseItem = BaseItem> = {
 };
 
 type UseMultiCheckboxResult = {
+  checkedItems: string[];
   allChecked: boolean;
   anyChecked: boolean;
   checkAll: () => void;
@@ -94,6 +95,7 @@ function useMultiCheckbox<TItem extends BaseItem>(options: UseMultiCheckboxOptio
   return {
     allChecked,
     anyChecked,
+    checkedItems,
     clear,
     checkAll,
     getCheckboxProps: useCallback(getCheckboxProps, [checkedItems, createChangeHandler]),

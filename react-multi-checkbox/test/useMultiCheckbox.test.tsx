@@ -20,12 +20,14 @@ describe('useMultiCheckbox', () => {
 
   it('should initialize with no items checked', () => {
     expect(result.current.anyChecked).toBe(false);
+    expect(result.current.checkedItems).toHaveLength(0);
   });
 
   it('should check an unchecked item', () => {
     const ID = '1';
     result.current.getCheckboxProps(ID).onChange(createEvent({ checked: true }));
     rerender();
+    expect(result.current.checkedItems).toContain(ID);
     expect(result.current.getCheckboxProps(ID).checked).toBe(true);
   });
 
@@ -37,6 +39,7 @@ describe('useMultiCheckbox', () => {
     result.current.getCheckboxProps(ID).onChange(createEvent({ checked: false }));
     rerender();
     expect(result.current.getCheckboxProps(ID).checked).toBe(false);
+    expect(result.current.checkedItems).not.toContain(ID);
   });
 
   it('should check all items when checkAll is called', () => {
