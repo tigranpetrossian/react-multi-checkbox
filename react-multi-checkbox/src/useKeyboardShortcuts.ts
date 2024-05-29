@@ -1,7 +1,6 @@
 import type { KeyboardEvent } from 'react';
 import type React from 'react';
 import { useEffect } from 'react';
-import type { UseMultiCheckboxOptions } from 'useMultiCheckbox';
 import { isMac } from 'lib/platform';
 
 type KeyboardShortcut = {
@@ -67,7 +66,9 @@ function modifiersMatchExactly(event: KeyboardEvent, modifiers: KeyboardShortcut
   );
 }
 
-function getKeyboardTargetElement(target: UseMultiCheckboxOptions['keyboardTarget']): HTMLElement | Window | null {
+function getKeyboardTargetElement(
+  target: React.RefObject<HTMLElement> | HTMLElement | string | null | undefined
+): HTMLElement | Window | null {
   if (target === undefined) {
     return window;
   }

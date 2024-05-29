@@ -3,8 +3,10 @@ import { useCallback, useState } from 'react';
 import { useShiftKey } from 'lib/keyboard';
 import { useKeyboardShortcuts } from 'useKeyboardShortcuts';
 
+type ID = string;
+
 type BaseItem = {
-  id: string;
+  id: ID;
 };
 
 type CheckboxProps = {
@@ -12,27 +14,35 @@ type CheckboxProps = {
   onChange: React.ChangeEventHandler<HTMLInputElement>;
 };
 
-type UseMultiCheckboxOptions<TItem extends BaseItem = BaseItem> = {
+type UseMultiCheckboxOptions<TItem extends BaseItem> = {
   items: TItem[];
   keyboardTarget?: React.RefObject<HTMLElement> | HTMLElement | string | null;
 };
 
 type UseMultiCheckboxResult = {
-  checkedItems: string[];
+  checkedItems: ID[];
   allChecked: boolean;
   anyChecked: boolean;
   checkAll: () => void;
   clear: () => void;
-  getCheckboxProps: (id: string) => CheckboxProps;
+  getCheckboxProps: (id: ID) => CheckboxProps;
 };
 
 function useMultiCheckbox<TItem extends BaseItem>(options: UseMultiCheckboxOptions<TItem>): UseMultiCheckboxResult {
   const { items, keyboardTarget } = options;
-  const [checkedItems, setCheckedItems] = useState<string[]>([]);
-  const [lastTouched, setLastTouched] = useState<string | null>(null);
+  const [checkedItems, setCheckedItems] = useState<ID[]>([]);
+  const [lastTouched, setLastTouched] = useState<ID | null>(null);
   const shiftKey = useShiftKey();
   const anyChecked = checkedItems.length > 0;
   const allChecked = checkedItems.length === items.length;
+
+  const checkItems = useCallback((ids: ID[]) => {
+    setCheckedItems((checkedItems) => [...new Set([...checkedItems, ...ids])]);
+  }, []);
+
+  const unCheckItems = useCallback((ids: ID[]) => {
+    setCheckedItems((checkedItems) => checkedItems.filter((checkedId) => !ids.includes(checkedId)));
+  }, []);
 
   const checkAll = useCallback(() => {
     setCheckedItems(items.map((item) => item.id));
@@ -42,37 +52,17 @@ function useMultiCheckbox<TItem extends BaseItem>(options: UseMultiCheckboxOptio
     setCheckedItems([]);
   }, []);
 
-  const handleSingleCheckboxChange = (id: string, checked: boolean) => {
-    if (checked) {
-      setCheckedItems((checkedItems) => [...checkedItems, id]);
-    } else {
-      setCheckedItems((checkedItems) => checkedItems.filter((checkedId) => checkedId !== id));
-    }
-  };
-
-  const handleRangeChange = (range: string[], checked: boolean) => {
-    if (checked) {
-      setCheckedItems((prev) => [...new Set([...prev, ...range])]);
-    } else {
-      setCheckedItems((prev) => prev.filter((checkedId) => !range.includes(checkedId)));
-    }
-  };
-
   const createChangeHandler = useCallback(
-    (id: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    (id: ID) => (event: React.ChangeEvent<HTMLInputElement>) => {
       setLastTouched(id);
-
-      if (shiftKey && lastTouched) {
-        const range = getSelectionRange(items, id, lastTouched);
-        handleRangeChange(range, event.target.checked);
-      } else {
-        handleSingleCheckboxChange(id, event.target.checked);
-      }
+      const ids = shiftKey && lastTouched ? getSelectionRange(items, id, lastTouched) : [id];
+      const action = event.target.checked ? checkItems : unCheckItems;
+      action(ids);
     },
-    [items, shiftKey, lastTouched]
+    [items, shiftKey, lastTouched, checkItems, unCheckItems]
   );
 
-  const getCheckboxProps = (id: string) => ({
+  const getCheckboxProps = (id: ID) => ({
     checked: checkedItems.includes(id),
     onChange: createChangeHandler(id),
   });
@@ -102,7 +92,7 @@ function useMultiCheckbox<TItem extends BaseItem>(options: UseMultiCheckboxOptio
   };
 }
 
-function getSelectionRange<TItem extends BaseItem>(items: TItem[], current: string, lastTouched: string): string[] {
+function getSelectionRange<TItem extends BaseItem>(items: TItem[], current: ID, lastTouched: ID): ID[] {
   const currentIndex = items.findIndex((item) => item.id === current);
   const lastIndex = items.findIndex((item) => item.id === lastTouched);
   const [start, end] = [currentIndex, lastIndex].sort((a, b) => a - b);
