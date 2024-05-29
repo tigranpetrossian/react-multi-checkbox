@@ -1,30 +1,23 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import '@testing-library/jest-dom/vitest';
-import { render, renderHook, type RenderHookResult } from '@testing-library/react';
+import { render, renderHook } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
-import type { UseMultiCheckboxOptions, UseMultiCheckboxResult } from '../src';
 import { useMultiCheckbox } from '../src';
-import type { DataItem } from './fixtures';
 import { data } from './fixtures';
 
 describe('useMultiCheckbox', () => {
   const createEvent = (target: { checked: boolean }) => ({ target }) as React.ChangeEvent<HTMLInputElement>;
-  let rerender: RenderHookResult<UseMultiCheckboxResult, UseMultiCheckboxOptions<DataItem>>['rerender'];
-  let result: RenderHookResult<UseMultiCheckboxResult, UseMultiCheckboxOptions<DataItem>>['result'];
 
-  beforeEach(() => {
-    const rendered = renderHook(() => useMultiCheckbox({ items: data }));
-    result = rendered.result;
-    rerender = rendered.rerender;
-  });
-
-  it('should initialize with no items checked', () => {
+  it('should initialize with no checked items', () => {
+    const { result } = renderHook(() => useMultiCheckbox({ items: data }));
     expect(result.current.anyChecked).toBe(false);
     expect(result.current.checkedItems).toHaveLength(0);
   });
 
   it('should check an unchecked item', () => {
+    const { result, rerender } = renderHook(() => useMultiCheckbox({ items: data }));
     const ID = '1';
+
     result.current.getCheckboxProps(ID).onChange(createEvent({ checked: true }));
     rerender();
     expect(result.current.checkedItems).toContain(ID);
@@ -32,7 +25,9 @@ describe('useMultiCheckbox', () => {
   });
 
   it('should uncheck a checked item', () => {
+    const { result, rerender } = renderHook(() => useMultiCheckbox({ items: data }));
     const ID = '1';
+
     result.current.getCheckboxProps(ID).onChange(createEvent({ checked: true }));
     rerender();
     expect(result.current.getCheckboxProps(ID).checked).toBe(true);
@@ -43,12 +38,16 @@ describe('useMultiCheckbox', () => {
   });
 
   it('should check all items when checkAll is called', () => {
+    const { result, rerender } = renderHook(() => useMultiCheckbox({ items: data }));
+
     result.current.checkAll();
     rerender();
     expect(result.current.allChecked).toBe(true);
   });
 
   it('should clear all checked items when clear is called', () => {
+    const { result, rerender } = renderHook(() => useMultiCheckbox({ items: data }));
+
     result.current.checkAll();
     rerender();
     result.current.clear();
